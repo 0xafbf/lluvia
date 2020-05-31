@@ -58,8 +58,8 @@ def _glsl_shader(ctx):
     args.add(shader.path)
 
     # cmd = "glslc -o %s %s" % (spirv.path, shader.path)
-    cmd = "glslc $@"
-    # cmd = "C:/VulkanSDK/1.2.135.0/Bin/glslc $@"
+    # cmd = "glslc $@"
+    cmd = "C:/VulkanSDK/1.2.135.0/Bin/glslc $@"
 
     ctx.actions.run_shell(
         inputs = inputs,

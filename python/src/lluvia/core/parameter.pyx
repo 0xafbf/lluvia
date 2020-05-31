@@ -14,7 +14,8 @@ from libcpp cimport bool as boolean
 from lluvia.core.enums.parameter import ParameterType
 
 __all__ = [
-    'Parameter'
+    'Parameter',
+    'PushConstants',
 ]
 
 cdef class Parameter:
@@ -63,3 +64,32 @@ cdef class Parameter:
 
     def __repr__(self):
         return 'Parameter(value={0})'.format(self.get())
+
+
+cdef class PushConstants:
+
+    def __init__(self):
+        pass
+
+    def __cinit__(self):
+        pass
+
+    def push(self, value):
+
+        vType = type(value)
+        if vType == int:
+            self.__p.pushInt32(value)
+        elif vType == float:
+            self.__p.pushFloat(value)
+        else:
+            raise RuntimeError('Unknown parameter type {0}'.format(vType))
+
+    def set(self, value):
+
+        vType = type(value)
+        if vType == int:
+            self.__p.setInt32(value)
+        elif vType == float:
+            self.__p.setFloat(value)
+        else:
+            raise RuntimeError('Unknown parameter type {0}'.format(vType))

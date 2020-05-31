@@ -91,6 +91,9 @@ void ComputeNode::initPipeline() {
     /////////////////////////////////////////////
     // Specialization constants
     /////////////////////////////////////////////
+    printf("right before create pipeline");
+
+
     const size_t size = sizeof(uint32_t);
     auto specializationMapEntries = vector<vk::SpecializationMapEntry> {
         {1, 0*size, size},
@@ -117,7 +120,7 @@ void ComputeNode::initPipeline() {
     vk::PipelineLayoutCreateInfo pipeLayoutInfo = vk::PipelineLayoutCreateInfo()
         .setSetLayoutCount(1)
         .setPSetLayouts(&m_descriptorSetLayout);
-    
+
     const auto& pushConstants = m_descriptor.getPushConstants();
     if (pushConstants.getSize() != 0) {
         auto pushConstantRange = vk::PushConstantRange()
@@ -129,11 +132,14 @@ void ComputeNode::initPipeline() {
         pipeLayoutInfo.setPPushConstantRanges(&pushConstantRange);
     }
 
+
+    printf("before create pipeline layout");
     m_pipelineLayout = m_device->get().createPipelineLayout(pipeLayoutInfo);
     vk::ComputePipelineCreateInfo computePipeInfo = vk::ComputePipelineCreateInfo()
         .setStage(stageInfo)
         .setLayout(m_pipelineLayout);
 
+    printf("before create pipeline");
     // create the compute pipeline
     m_pipeline = m_device->get().createComputePipeline(nullptr, computePipeInfo);
 }
@@ -281,7 +287,7 @@ void ComputeNode::record(ll::CommandBuffer& commandBuffer) const {
     ll::throwSystemErrorIf(m_descriptor.getGridZ() == 0, ll::ErrorCode::InvalidLocalShape, "descriptor grid shape Z must be greater than zero");
 
     vkCommandBuffer.bindPipeline(vk::PipelineBindPoint::eCompute, m_pipeline);
-    
+
     vkCommandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute,
                                      m_pipelineLayout,
                                      0,
@@ -298,7 +304,7 @@ void ComputeNode::record(ll::CommandBuffer& commandBuffer) const {
             pushConstants.getSize(),
             pushConstants.getPtr());
     }
-    
+
     vkCommandBuffer.dispatch(m_descriptor.getGridX(),
                              m_descriptor.getGridY(),
                              m_descriptor.getGridZ());
@@ -320,12 +326,15 @@ void ComputeNode::onInit() {
                 builder.onNodeInit(node)
             )";
 
+            std::cout << "finished lua init\n";
+
             shared_interpreter->loadAndRun<void>(lua, builderName, shared_from_this());
 
         } else {
             ll::throwSystemError(ll::ErrorCode::SessionLost, "Attempt to access the Lua interpreter of a Session already destroyed.");
         }
     }
+    std::cout << "init pipeline\n";
 
     initPipeline();
 }
@@ -369,7 +378,7 @@ void ComputeNode::bindImageView(const ll::PortDescriptor& port, const std::share
     // validate that imgView can be bound at index position.
     const auto& vkBinding = m_parameterBindings.at(port.binding);
     const auto portType = ll::vkDescriptorTypeToPortType(vkBinding.descriptorType);
-    
+
     if (isSampled) {
         ll::throwSystemErrorIf(portType != ll::PortType::SampledImageView, ll::ErrorCode::PortBindingError,
             "Port [" + port.name + "] of type ll::Imageview (sampled) cannot be bound at position ["
@@ -416,7 +425,7 @@ std::vector<vk::DescriptorPoolSize> ComputeNode::getDescriptorPoolSizes() const 
     pushDescriptorPoolSize(vk::DescriptorType::eStorageBuffer, poolSizes);
     pushDescriptorPoolSize(vk::DescriptorType::eStorageImage, poolSizes);
     pushDescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, poolSizes);
-        
+
     return poolSizes;
 }
 

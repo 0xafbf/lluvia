@@ -29,7 +29,7 @@ from lluvia.core.enums.node import PortType as PortType_t
 from lluvia.core.image cimport Image, ImageView, _ImageView, _buildImageView
 from lluvia.core.impl.stdcpp cimport static_pointer_cast
 from lluvia.core.memory cimport Memory, _Memory
-from lluvia.core.parameter cimport Parameter
+from lluvia.core.parameter cimport Parameter, PushConstants
 from lluvia.core.program cimport Program, _Program
 from lluvia.core.session cimport Session
 
@@ -277,6 +277,14 @@ cdef class ComputeNode:
         out.__p = self.__node.get().getParameter(impl.encodeString(name))
         return out
 
+    def setPushConstants(self, PushConstants constants):
+        self.__node.get().setPushConstants(constants.__p)
+
+    def getPushConstants(self):
+        cdef PushConstants out = PushConstants()
+        out.__p = self.__node.get().getPushConstants()
+        return out
+
     def bind(self, str name, obj):
         """
         Binds an object as parater to this node.
@@ -300,12 +308,12 @@ cdef class ComputeNode:
             buf = obj
             self.__node.get().bind(impl.encodeString(name),
                                    static_pointer_cast[_Object](buf.__buffer))
-        
+
         elif objType == ImageView:
             imgView = obj
             self.__node.get().bind(impl.encodeString(name),
                                    static_pointer_cast[_Object](imgView.__imageView))
-            
+
         else:
             raise RuntimeError('Unsupported obj type {0}. Valid types are ll.Buffer and ll.ImageView.'.format(type(obj)))
 

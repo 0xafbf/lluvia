@@ -1,0 +1,57 @@
+/**
+Codigo glsl para el procesamiento y creacion de una imagen con deteccion de lineas para Lluvia
+*/
+
+#version 450
+
+#include <lluvia/core.glsl>
+
+layout(binding = 0, rgba8ui) uniform uimage2D input_image;
+layout(binding = 1, rgba32f) uniform image2D output_image;
+
+precision mediump float;
+
+// layout(push_constant) uniform const_0 {
+// } params;
+// ivec2 centerUV;
+ivec2 leftUV = ivec2(-1, 0);
+ivec2 rightUV = ivec2(1, 0);
+
+ivec2 topUV = ivec2(0, 1);
+ivec2 topLeftUV = ivec2(-1, 1);
+ivec2 topRightUV = ivec2(1, 1);
+
+ivec2 bottomUV = ivec2(0, -1);
+ivec2 bottomLeftUV = ivec2(-1, -1);
+ivec2 bottomRightUV = ivec2(1, -1);
+
+void main()
+{
+    const ivec2 coords  = LL_GLOBAL_COORDS_2D;
+    const ivec2 imgSize = imageSize(input_image);
+
+    if (coords.x > imgSize.x || coords.y > imgSize.y) {
+        return;
+    }
+
+    float bottomIntensity =      imageLoad(input_image, coords +bottomUV).r;
+    float bottomLeftIntensity =  imageLoad(input_image, coords +bottomLeftUV).r;
+    float bottomRightIntensity = imageLoad(input_image, coords +bottomRightUV).r;
+    float leftIntensity =        imageLoad(input_image, coords +leftUV).r;
+    float rightIntensity =       imageLoad(input_image, coords +rightUV).r;
+    float topIntensity =         imageLoad(input_image, coords +topUV).r;
+    float topLeftIntensity =     imageLoad(input_image, coords +topLeftUV).r;
+    float topRightIntensity =    imageLoad(input_image, coords +topRightUV).r;
+
+    vec2 gradientDirection;
+    gradientDirection.x = -bottomLeftIntensity - 2.0 * leftIntensity - topLeftIntensity + bottomRightIntensity + 2.0 * rightIntensity + topRightIntensity;
+    gradientDirection.y = -topLeftIntensity - 2.0 * topIntensity - topRightIntensity + bottomLeftIntensity + 2.0 * bottomIntensity + bottomRightIntensity;
+
+    float gradientMagnitude = length(gradientDirection);
+    vec2 normalizedDirection = normalize(gradientDirection);
+
+    normalizedDirection = sign(normalizedDirection) * floor(abs(normalizedDirection) + 0.617316); // Offset by 1-sin(pi/8) to set to 0 if near axis, 1 if away
+    // normalizedDirection = (normalizedDirection + 1.0) * 0.5; // Place -1.0 - 1.0 within 0 - 1.0
+
+    imageStore(output_image, coords, vec4(gradientMagnitude, normalizedDirection.x, normalizedDirection.y, 1.0));
+}

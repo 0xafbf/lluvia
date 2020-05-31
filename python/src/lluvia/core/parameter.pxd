@@ -28,3 +28,26 @@ cdef extern from 'lluvia/core/Parameter.h' namespace 'll':
 cdef class Parameter:
 
     cdef _Parameter __p
+
+
+
+
+cdef extern from 'lluvia/core/PushConstants.h' namespace 'll':
+
+    cdef cppclass _PushConstants 'll::PushConstants':
+
+        _PushConstants()
+        _PushConstants(const _Parameter&)
+
+        void pushFloat(const float&)
+        void pushInt32(const int&)
+
+        void setFloat(const float&)
+        void setInt32(const int&)
+
+
+cdef class PushConstants:
+
+    cdef _PushConstants __p
+
+

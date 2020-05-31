@@ -14,7 +14,7 @@ from libcpp.string cimport string
 
 from lluvia.core.command_buffer cimport _CommandBuffer
 from lluvia.core.core_object cimport _Object
-from lluvia.core.parameter cimport _Parameter
+from lluvia.core.parameter cimport _Parameter, _PushConstants
 from lluvia.core.program cimport _Program
 from lluvia.core.session cimport Session
 from lluvia.core.types cimport _vec3ui

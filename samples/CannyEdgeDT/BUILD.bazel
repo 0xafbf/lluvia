@@ -1,0 +1,19 @@
+load("@//bazel/glsl:def.bzl", "glsl_shader")
+
+glsl_shader(
+    name = "CannyLDT",
+    shader = "glsl/CannyLDT.comp",
+    deps = [
+        "//glsl/lib:lluvia_glsl_library"
+    ],
+    visibility = ["//visibility:public"]
+)
+
+glsl_shader(
+    name = "CannyR",
+    shader = "glsl/CannyR.comp",
+    deps = [
+        "//glsl/lib:lluvia_glsl_library"
+    ],
+    visibility = ["//visibility:public"]
+)
