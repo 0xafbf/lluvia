@@ -92,9 +92,9 @@ def main():
         fill_cmd_buffer(cmdBuffer)
 
 
-    cv.namedWindow("my window")
+    cv.namedWindow("my window", cv.WINDOW_NORMAL)
+    cv.resizeWindow("my window", 400, 300)
     cv.createTrackbar("my trackbar", "my window", 1, 30, on_trackbar)
-
 
     while r:
 

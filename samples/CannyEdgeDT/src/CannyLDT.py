@@ -112,8 +112,8 @@ def main():
     cv.namedWindow("my window")
     cv.createTrackbar("texel width", "my window", 1, 30, lambda x: update_value('texelWidth', x))
     cv.createTrackbar("texel height", "my window", 1, 30, lambda x: update_value('texelHeight', x))
-    cv.createTrackbar("upperThreshold", "my window", 1, 30, lambda x: update_value('upperThreshold', x))
-    cv.createTrackbar("lowerThreshold", "my window", 1, 30, lambda x: update_value('lowerThreshold', x))
+    cv.createTrackbar("upperThreshold", "my window", 1, 255, lambda x: update_value('upperThreshold', x))
+    cv.createTrackbar("lowerThreshold", "my window", 1, 255, lambda x: update_value('lowerThreshold', x))
 
 
 
